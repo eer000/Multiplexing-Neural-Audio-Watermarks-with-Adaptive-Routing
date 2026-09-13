@@ -1,0 +1,10 @@
+# Tested research runtime. CUDA/PyTorch installation is platform-specific.
+torch==2.10.0
+torchaudio==2.10.0
+audioseal==0.1.4
+speechtokenizer==1.0.1
+resemble-perth==1.0.1
+numpy==1.26.4
+soundfile==0.12.1
+pystoi==0.4.1
+pesq==0.0.4

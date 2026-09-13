@@ -1,0 +1,26 @@
+{
+  "files": [
+    {
+      "path": "REPLACE_WITH_AUDIO.flac",
+      "split": "eval",
+      "message": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "channels": 128,
+  "layers": 5,
+  "kernel_size": 15,
+  "activation": "relu"
+}
