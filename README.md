@@ -1,107 +1,101 @@
 # Multiplexing Neural Audio Watermarks with Adaptive Routing
 
-Research code for SpeechTokenizer-aware AudioSeal adaptation and MaskNet routing of adapted AudioSeal + PerTh.
+Code for AudioSeal adaptation to SpeechTokenizer and adaptive routing of AudioSeal + PerTh with MaskNet.
 
-**Initial research release. No validated final weights, datasets, or verified paper results are bundled.** Paths in the examples are placeholders. Some modules remain explicitly incomplete.
+This repository currently focuses on **training code and evaluation entry points**. It does not claim a verified reproduction of the paper's numerical results.
 
-## What is available
+## Components
 
 | Component | Status |
 |---|---|
-| AudioSeal adaptation to SpeechTokenizer | Research implementation: real ST forward, frozen proxy backward; decoder/message processor fine-tuning |
-| Adapted AudioSeal single-attack evaluation | Implemented; original AudioSeal reference; NA, ST, low-pass, Gaussian noise, MP3 |
-| MaskNet network | Implemented; architecture/activation explicitly configured |
-| MaskNet routing of adapted AudioSeal + PerTh | Checkpoint-based evaluation implemented; validated routing weights pending |
-| Manuscript-aligned MaskNet training | Placeholder; `train_mask` exits explicitly |
-| Proxy training and final checkpoint downloads | Pending release |
-| Paper results / citation metadata | Pending verification |
+| AudioSeal → SpeechTokenizer adaptation | Experimental implementation |
+| Adapted AudioSeal single-attack evaluation | Implemented |
+| MaskNet network | Implemented |
+| Adapted AudioSeal + PerTh through MaskNet evaluation | Implemented |
+| Manuscript-aligned MaskNet training | Explicit placeholder |
 
-No other watermark methods or datasets are required by this release. PerTh is needed only for multiplexing. A single-method comparison is not a broad watermark benchmark.
+## Installation
 
-## Install
-
-Use Python 3.10+ and install a compatible PyTorch runtime for your hardware, then:
+Python 3.10+ and a compatible PyTorch runtime are required.
 
 ```bash
-pip install -e .                  # AudioSeal-only evaluation/training
-pip install -e '.[multiplex]'     # additionally enables PerTh multiplexing
+pip install -e .
+pip install -e '.[multiplex]'  # for PerTh routing evaluation
 ```
 
-MP3 evaluation requires `ffmpeg` with libmp3lame on PATH. Historical runtime versions are recorded in `requirements-tested.txt`; this file is not a guarantee for every operating system. No model-dependent end-to-end release validation has been completed yet.
+MP3 evaluation additionally requires `ffmpeg` with libmp3lame. `requirements-tested.txt` records the historical research environment; platform compatibility may vary.
 
-## 1. Fine-tune AudioSeal for ST
-
-Supply your own audio and checkpoint paths:
+## Train AudioSeal for SpeechTokenizer
 
 ```bash
 python -m audioseal_st.train \
-  --data-root /path/to/train-clean \
+  --data-root /path/to/training_audio \
   --proxy-checkpoint /path/to/proxy.pt \
-  --sptk-config /path/to/st_config.json \
-  --sptk-checkpoint /path/to/st.pt \
-  --output runs/adapt \
-  --residual-mode capped --minimum-snr 29
+  --sptk-config /path/to/tokenizer_config.json \
+  --sptk-checkpoint /path/to/tokenizer.pt \
+  --residual-mode capped --minimum-snr 29 \
+  --output runs/adaptation
 ```
 
-The current data loader uses LibriSpeech-style FLAC filenames to create speaker-disjoint train/validation splits. Data is not distributed. This is an experimental training objective, not a claim of exact manuscript reproduction or successful adaptation. The proxy checkpoint format is `GatedLongContextProxy` (96 channels, 12 blocks). Detector and tokenizer weights are frozen. Every evaluation interval saves generator weights; optimizer/random states are also saved, but full resume support is pending.
+The generator decoder and message processor are updated. The native detector and tokenizer are frozen; real tokenizer outputs supply forward values and a frozen proxy supplies gradients. The current loader expects 16 kHz FLAC and speaker-prefixed filenames of the form `speaker-chapter-utterance.flac`. Parameters are an experimental recipe, not an endorsed final configuration.
 
-## 2. Evaluate adapted AudioSeal
+## Evaluate adapted AudioSeal
 
-Replace the example audio path in `configs/eval.example.json`; add actual files with fixed 16-bit messages. A useful evaluation requires enough positive and negative samples; the one-entry example is only a schema illustration.
+Populate the manifest schema in `configs/eval.example.json` with local paths and fixed binary messages.
 
 ```bash
 python -m audioseal_st.evaluate \
-  --manifest configs/eval.example.json --data-root /path/to/audio \
+  --manifest configs/eval.example.json --data-root /path/to/evaluation_audio \
   --audioseal-checkpoint /path/to/adapted_generator.pt \
-  --sptk-config /path/to/st_config.json --sptk-checkpoint /path/to/st.pt \
+  --sptk-config /path/to/tokenizer_config.json \
+  --sptk-checkpoint /path/to/tokenizer.pt \
   --single-only --attacks ST \
-  --residual-mode capped --minimum-snr 29 --output runs/eval_st
+  --residual-mode capped --minimum-snr 29 --output runs/evaluation
 ```
 
-For separate single-attack results, use `--attacks NA,ST,lowpass,gaussian,mp3`. These are **not composed attacks**. Low-pass is a 3.4 kHz biquad, noise is 20 dB relative to each input, and MP3 is 32 kbps. These settings are initial public defaults, not a claimed reproduction of all historical benchmark settings.
+`--attacks NA,ST,lowpass,gaussian,mp3` evaluates attacks independently, never as a chain. Defaults: 3.4 kHz low-pass biquad, 20 dB Gaussian noise relative to each input, and MP3 at 32 kbps. Match residual constraints to training.
 
-## 3. MaskNet method
+## MaskNet and multiplexed evaluation
 
-`audioseal_st.models.MaskNet` produces two time-varying weights from mono input. The routed audio is:
+MaskNet produces two time-varying weights for the adapted AudioSeal and PerTh residuals:
 
 ```text
-watermarked = clip(clean + mask_A * adapted_AudioSeal_residual
-                         + mask_P * PerTh_residual, -1, 1)
+output = clip(clean + mask_A * residual_A + mask_P * residual_P, -1, 1)
 ```
 
-The example configuration is five convolution layers, 128 hidden channels, kernel size 15, and ReLU output. Checkpoints must match the explicit configuration; no assumption is made about undocumented historical weights. The manuscript-aligned training entry point is reserved as `python -m audioseal_st.train_mask` and currently exits with a clear pending-implementation message.
-
-## 4. Evaluate adapted AudioSeal + PerTh through MaskNet
+Architecture and output activation are explicit in `configs/mask.example.json`. The manuscript-aligned training entry point, `python -m audioseal_st.train_mask`, is not implemented yet and exits with a clear message.
 
 ```bash
 python -m audioseal_st.evaluate \
-  --manifest configs/eval.example.json --data-root /path/to/audio \
+  --manifest configs/eval.example.json --data-root /path/to/evaluation_audio \
   --audioseal-checkpoint /path/to/adapted_generator.pt \
-  --sptk-config /path/to/st_config.json --sptk-checkpoint /path/to/st.pt \
+  --sptk-config /path/to/tokenizer_config.json \
+  --sptk-checkpoint /path/to/tokenizer.pt \
   --mask-checkpoint /path/to/mask.pt --mask-config configs/mask.example.json \
   --attacks ST --residual-mode capped --minimum-snr 29 \
-  --output runs/eval_mask
+  --output runs/multiplexed_evaluation
 ```
 
-This reports the component references, simple additive combination, and MaskNet combination for the same AudioSeal/PerTh pair. No unrelated watermark combinations are evaluated. Only generator-format AudioSeal checkpoints are accepted; experimental residual-adapter checkpoints need a future explicit loader.
+This evaluates the AudioSeal/PerTh pair and its component references, additive baseline, and MaskNet routing. Other watermark families are outside this release.
 
-## Metrics and interpretation
+## Output and interpretation
 
-- Primary metric: empirical TPR at FPR ≤ 1%, with clean negatives undergoing the same single attack.
-- Joint Any: exact joint threshold search with one shared false-positive budget; not two independent 1% budgets.
-- Outputs: per-clip `scores.jsonl`, configuration/checkpoint hashes, `summary.json` with detection, bit accuracy and SNR.
-- Full public PESQ/STOI reporting is pending. Existence detection is not message recovery.
-- Empirical ROC uses evaluation labels; it is not an independently calibrated deployment threshold.
-- Match residual shaping/energy settings to training. A weight file alone does not specify the full inference method.
+- Per-clip scores, configuration hashes, and aggregate detection/SNR results are saved.
+- TPR@FPR≤1% uses transformed clean negatives for each single attack.
+- Joint Any optimizes two thresholds under one shared false-positive budget. It is not simultaneous survival or payload recovery.
+- Empirical ROC statistics are not independently calibrated deployment thresholds.
+- The evaluation loader accepts generator-format AudioSeal parameters; experimental residual adapters need a separate loader.
+- Public PESQ/STOI reporting and manuscript-aligned MaskNet training remain incomplete.
 
-## Check the placeholder without models
+## Checks
 
 ```bash
 python scripts/evaluate.py --config configs/example.json --dry-run
+PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-This only validates configuration. All metric fields are null; it never pretends to run model inference. Numerical metric tests are under `tests/`.
+The dry run checks configuration only and leaves metric fields null. It never substitutes for real inference. Automated checks do not establish paper-level reproduction.
 
-## License and releases
+## License
 
-License selection is pending. Third-party models/code/data are not bundled and retain their own terms. Validated weights, paper metadata, reproduction tables, and a tagged paper release will be added after verification.
+License selection is pending. Third-party dependencies retain their respective terms.
