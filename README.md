@@ -12,7 +12,6 @@ This repository currently focuses on **training code and evaluation entry points
 | Adapted AudioSeal single-attack evaluation | Implemented |
 | MaskNet network | Implemented |
 | Adapted AudioSeal + PerTh through MaskNet evaluation | Implemented |
-| Manuscript-aligned MaskNet training | Explicit placeholder |
 
 ## Installation
 
@@ -63,7 +62,7 @@ MaskNet produces two time-varying weights for the adapted AudioSeal and PerTh re
 output = clip(clean + mask_A * residual_A + mask_P * residual_P, -1, 1)
 ```
 
-Architecture and output activation are explicit in `configs/mask.example.json`. The manuscript-aligned training entry point, `python -m audioseal_st.train_mask`, is not implemented yet and exits with a clear message.
+Architecture and output activation are explicit in `configs/mask.example.json`. This release provides the MaskNet network and checkpoint-based evaluation.
 
 ```bash
 python -m audioseal_st.evaluate \
@@ -85,17 +84,15 @@ This evaluates the AudioSeal/PerTh pair and its component references, additive b
 - Joint Any optimizes two thresholds under one shared false-positive budget. It is not simultaneous survival or payload recovery.
 - Empirical ROC statistics are not independently calibrated deployment thresholds.
 - The evaluation loader accepts generator-format AudioSeal parameters; experimental residual adapters need a separate loader.
-- Public PESQ/STOI reporting and manuscript-aligned MaskNet training remain incomplete.
 
 ## Checks
 
 ```bash
-python scripts/evaluate.py --config configs/example.json --dry-run
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-The dry run checks configuration only and leaves metric fields null. It never substitutes for real inference. Automated checks do not establish paper-level reproduction.
+Automated checks cover metric calculation and residual constraints; they do not establish paper-level reproduction.
 
 ## License
 
-License selection is pending. Third-party dependencies retain their respective terms.
+Third-party dependencies retain their respective terms. No additional license grant is made by this repository.
