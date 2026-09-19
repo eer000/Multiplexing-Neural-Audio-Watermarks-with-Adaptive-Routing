@@ -1,0 +1,26 @@
+{
+  "release": "v0.2.0-latent600",
+  "base_url": "https://github.com/eer000/Multiplexing-Neural-Audio-Watermarks-with-Adaptive-Routing/releases/download/v0.2.0-latent600/",
+  "files": {
+    "detector.pt": {
+      "sha256": "b7b3df1beb4e4c10fae2bd77fb78c9fba2ef814db57067ee04f9af728e7d96c9",
+      "bytes": 34623725
+    },
+    "generator.pt": {
+      "sha256": "5c23ee044b2c8c87896ab06c7d2d350375463679e999bddbc62283e91fd58933",
+      "bytes": 58770103
+    },
+    "initial_generator.pt": {
+      "sha256": "cc22190af8d5328828fe4a93263aa75892cea13e874d773876fa13c60a98ca60",
+      "bytes": 58769568
+    },
+    "masknet.pt": {
+      "sha256": "58e35d1840029f306b6534134d75352f6c06b4765a3c167a2b4db72bc7867991",
+      "bytes": 70749
+    },
+    "proxy.pt": {
+      "sha256": "f83910c270f8473c887297ba33bed8920207aa723efbc1bbc1f21ee354d64d8c",
+      "bytes": 6699085
+    }
+  }
+}

@@ -2,6 +2,17 @@ import torch
 from torch import nn
 
 
+def local_noise_limit(clean, residual, minimum_snr=26):
+    """Smooth pointwise residual limit tied to a 40ms clean RMS envelope.
+
+    No absolute floor that injects noise in silence. This is not a validated
+    auditory masking model or a guarantee of per-window SNR.
+    """
+    power=torch.nn.functional.avg_pool1d(clean.square(),641,stride=1,padding=320)
+    limit=2*10**(-minimum_snr/20)*power.clamp_min(0).sqrt()
+    return limit*torch.tanh(residual/limit.clamp_min(1e-8))
+
+
 class ResidualAdapter(nn.Module):
     """Frozen AudioSeal plus zero-initialized waveform residual correction."""
     def __init__(self, base):

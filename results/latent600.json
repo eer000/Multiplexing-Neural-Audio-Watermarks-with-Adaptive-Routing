@@ -1,0 +1,386 @@
+{
+  "n_cal": 1000,
+  "n_eval": 500,
+  "results": [
+    {
+      "method": "AT_a1",
+      "attack": "NA",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.96,
+          "fpr": 0.02,
+          "calibration_fpr": 0.01,
+          "threshold": 0.8597162365913392
+        },
+        "P": {
+          "tpr": 0.182,
+          "fpr": 0.054,
+          "calibration_fpr": 0.01,
+          "threshold": 0.24077144265174868
+        },
+        "A_original": {
+          "tpr": 1.0,
+          "fpr": 0.02,
+          "calibration_fpr": 0.01,
+          "threshold": 0.03366493061184884
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 0.926,
+        "fpr": 0.064,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.8667160272598268,
+          0.31360200047492987
+        ]
+      },
+      "quality": {
+        "snr": 29.12331037902832,
+        "pesq": 4.013597222805023,
+        "stoi": 0.995194987324882
+      }
+    },
+    {
+      "method": "MaskNet_AT_P",
+      "attack": "NA",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.96,
+          "fpr": 0.02,
+          "calibration_fpr": 0.01,
+          "threshold": 0.8597162365913392
+        },
+        "P": {
+          "tpr": 1.0,
+          "fpr": 0.054,
+          "calibration_fpr": 0.01,
+          "threshold": 0.24077144265174868
+        },
+        "A_original": {
+          "tpr": 0.998,
+          "fpr": 0.02,
+          "calibration_fpr": 0.01,
+          "threshold": 0.03366493061184884
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 1.0,
+        "fpr": 0.064,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.8667160272598268,
+          0.31360200047492987
+        ]
+      },
+      "quality": {
+        "snr": 15.325014057159423,
+        "pesq": 3.9229689705371857,
+        "stoi": 0.9887679053943164
+      }
+    },
+    {
+      "method": "AT_a1",
+      "attack": "ST",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.704,
+          "fpr": 0.018,
+          "calibration_fpr": 0.01,
+          "threshold": 0.8544551134109498
+        },
+        "P": {
+          "tpr": 0.1,
+          "fpr": 0.056,
+          "calibration_fpr": 0.01,
+          "threshold": 0.05720172822475434
+        },
+        "A_original": {
+          "tpr": 0.068,
+          "fpr": 0.002,
+          "calibration_fpr": 0.01,
+          "threshold": 0.029637871310114864
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 0.542,
+        "fpr": 0.064,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.8766208291053773,
+          0.06738875806331636
+        ]
+      },
+      "quality": {
+        "snr": 29.12331037902832,
+        "pesq": 4.013597222805023,
+        "stoi": 0.995194987324882
+      }
+    },
+    {
+      "method": "MaskNet_AT_P",
+      "attack": "ST",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.684,
+          "fpr": 0.018,
+          "calibration_fpr": 0.01,
+          "threshold": 0.8544551134109498
+        },
+        "P": {
+          "tpr": 0.318,
+          "fpr": 0.056,
+          "calibration_fpr": 0.01,
+          "threshold": 0.05720172822475434
+        },
+        "A_original": {
+          "tpr": 0.058,
+          "fpr": 0.002,
+          "calibration_fpr": 0.01,
+          "threshold": 0.029637871310114864
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 0.598,
+        "fpr": 0.064,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.8766208291053773,
+          0.06738875806331636
+        ]
+      },
+      "quality": {
+        "snr": 15.325014057159423,
+        "pesq": 3.9229689705371857,
+        "stoi": 0.9887679053943164
+      }
+    },
+    {
+      "method": "AT_a1",
+      "attack": "lowpass",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.838,
+          "fpr": 0.012,
+          "calibration_fpr": 0.01,
+          "threshold": 0.8780383467674256
+        },
+        "P": {
+          "tpr": 0.182,
+          "fpr": 0.054,
+          "calibration_fpr": 0.01,
+          "threshold": 0.2381960600614548
+        },
+        "A_original": {
+          "tpr": 1.0,
+          "fpr": 0.016,
+          "calibration_fpr": 0.01,
+          "threshold": 0.03619444370269776
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 0.802,
+        "fpr": 0.058,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.8899735212326051,
+          0.3178119361400605
+        ]
+      },
+      "quality": {
+        "snr": 29.12331037902832,
+        "pesq": 4.013597222805023,
+        "stoi": 0.995194987324882
+      }
+    },
+    {
+      "method": "MaskNet_AT_P",
+      "attack": "lowpass",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.83,
+          "fpr": 0.012,
+          "calibration_fpr": 0.01,
+          "threshold": 0.8780383467674256
+        },
+        "P": {
+          "tpr": 1.0,
+          "fpr": 0.054,
+          "calibration_fpr": 0.01,
+          "threshold": 0.2381960600614548
+        },
+        "A_original": {
+          "tpr": 1.0,
+          "fpr": 0.016,
+          "calibration_fpr": 0.01,
+          "threshold": 0.03619444370269776
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 1.0,
+        "fpr": 0.058,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.8899735212326051,
+          0.3178119361400605
+        ]
+      },
+      "quality": {
+        "snr": 15.325014057159423,
+        "pesq": 3.9229689705371857,
+        "stoi": 0.9887679053943164
+      }
+    },
+    {
+      "method": "AT_a1",
+      "attack": "gaussian",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.996,
+          "fpr": 0.014,
+          "calibration_fpr": 0.01,
+          "threshold": 0.40259230136871343
+        },
+        "P": {
+          "tpr": 0.168,
+          "fpr": 0.04,
+          "calibration_fpr": 0.01,
+          "threshold": 0.06643474102020265
+        },
+        "A_original": {
+          "tpr": 0.858,
+          "fpr": 0.006,
+          "calibration_fpr": 0.01,
+          "threshold": 0.020130135118961338
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 0.996,
+        "fpr": 0.046,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.45151576399803167,
+          0.08593014627695085
+        ]
+      },
+      "quality": {
+        "snr": 29.12331037902832,
+        "pesq": 4.013597222805023,
+        "stoi": 0.995194987324882
+      }
+    },
+    {
+      "method": "MaskNet_AT_P",
+      "attack": "gaussian",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.996,
+          "fpr": 0.014,
+          "calibration_fpr": 0.01,
+          "threshold": 0.40259230136871343
+        },
+        "P": {
+          "tpr": 1.0,
+          "fpr": 0.04,
+          "calibration_fpr": 0.01,
+          "threshold": 0.06643474102020265
+        },
+        "A_original": {
+          "tpr": 0.794,
+          "fpr": 0.006,
+          "calibration_fpr": 0.01,
+          "threshold": 0.020130135118961338
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 1.0,
+        "fpr": 0.046,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.45151576399803167,
+          0.08593014627695085
+        ]
+      },
+      "quality": {
+        "snr": 15.325014057159423,
+        "pesq": 3.9229689705371857,
+        "stoi": 0.9887679053943164
+      }
+    },
+    {
+      "method": "AT_a1",
+      "attack": "mp3",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.544,
+          "fpr": 0.034,
+          "calibration_fpr": 0.01,
+          "threshold": 0.6242128014564515
+        },
+        "P": {
+          "tpr": 0.22,
+          "fpr": 0.054,
+          "calibration_fpr": 0.01,
+          "threshold": 0.22951512038707736
+        },
+        "A_original": {
+          "tpr": 1.0,
+          "fpr": 0.012,
+          "calibration_fpr": 0.01,
+          "threshold": 0.030675170943140987
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 0.184,
+        "fpr": 0.076,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.833272695541382,
+          0.28907510638237005
+        ]
+      },
+      "quality": {
+        "snr": 29.12331037902832,
+        "pesq": 4.013597222805023,
+        "stoi": 0.995194987324882
+      }
+    },
+    {
+      "method": "MaskNet_AT_P",
+      "attack": "mp3",
+      "independent_calibration_detectors": {
+        "A": {
+          "tpr": 0.458,
+          "fpr": 0.034,
+          "calibration_fpr": 0.01,
+          "threshold": 0.6242128014564515
+        },
+        "P": {
+          "tpr": 1.0,
+          "fpr": 0.054,
+          "calibration_fpr": 0.01,
+          "threshold": 0.22951512038707736
+        },
+        "A_original": {
+          "tpr": 0.996,
+          "fpr": 0.012,
+          "calibration_fpr": 0.01,
+          "threshold": 0.030675170943140987
+        }
+      },
+      "independent_calibration_any": {
+        "tpr": 1.0,
+        "fpr": 0.076,
+        "calibration_fpr": 0.01,
+        "thresholds": [
+          0.833272695541382,
+          0.28907510638237005
+        ]
+      },
+      "quality": {
+        "snr": 15.325014057159423,
+        "pesq": 3.9229689705371857,
+        "stoi": 0.9887679053943164
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "channels": 32,
+  "layers": 3,
+  "kernel_size": 15,
+  "activation": "sigmoid"
+}

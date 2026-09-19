@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audioseal-st-research"
-version = "0.1.0.dev0"
+version = "0.2.0"
 description = "SpeechTokenizer-specific AudioSeal adaptation and watermark multiplexing research"
 requires-python = ">=3.10"
 dependencies = ["numpy", "torch", "torchaudio", "audioseal", "speechtokenizer", "soundfile", "pystoi", "pesq"]
