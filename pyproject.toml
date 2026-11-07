@@ -3,17 +3,19 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "audioseal-st-research"
-version = "0.2.0"
-description = "SpeechTokenizer-specific AudioSeal adaptation and watermark multiplexing research"
+name = "masknet-watermark"
+version = "1.0.0"
+readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
-dependencies = ["numpy", "torch", "torchaudio", "audioseal", "speechtokenizer", "soundfile", "pystoi", "pesq"]
+dependencies = ["numpy>=1.24", "torch==2.10.0", "soundfile>=0.12"]
 
 [project.optional-dependencies]
-multiplex = ["resemble-perth"]
+evaluation = ["pesq", "pystoi", "scipy", "torchaudio==2.10.0"]
+codec-evaluation = ["speechtokenizer", "transformers", "descript-audio-codec"]
 
-[project.scripts]
-audioseal-st-evaluate = "audioseal_st.evaluate:main"
+[tool.setuptools]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/*.txt"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

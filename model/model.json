@@ -1,0 +1,116 @@
+{
+  "format": "masknet-presence-inference-v3",
+  "model_id": "MaskNet",
+  "sample_rate": 16000,
+  "segment_samples": 96000,
+  "score_sample_counts": [
+    9600,
+    24000,
+    96000
+  ],
+  "query_ids": [
+    "presence",
+    "native_mean"
+  ],
+  "thresholds": [
+    4.1460304260253915,
+    0.5103373527526857
+  ],
+  "calibration_id": "49979e6cb2961f64c19d4e97ef32f589fb8dbbbf6c99c093df108fa70fcd5492",
+  "calibration_speaker_SHA256": [
+    "00d7fe6b2441cdc64207ccdc087a6adb0ac2cbafd8080453d11aac5a1e30453b",
+    "012948ac060239aa43bd33712f231bc888f3dd2087609d9982b025cb723fcc1d",
+    "093fb14addb9c285d6de796d2f5b1bd71db3cc63b01201dffefe952fdbed143a",
+    "0b33eca2f58bd97f276d363f96d899893c737f6297b3bae6ff0c172735b27c26",
+    "111adbeea6451576c2efa17f2c8a63d024db61b11bf5951bec7c72df135945e8",
+    "177f108b7fe0fa9725c5b29c7814ac94d6d0da407da4dfb63fffe92a9b6c9a36",
+    "34f00f80fc27cdb4befef17c32ab576e34f04c95b172328739ea66d35701f90b",
+    "3a524314fac9b1330bda847c5c7a33e525149a74bcd5020dcf6795fa792059c5",
+    "3e5077b875992bd9a5364dd12b1723e0fbcb235c8100176294897b72e3d7e912",
+    "4b74da543dbad1d6536cab8a8ce7c2b5a9a76d326798e59adc0bd242f000d080",
+    "61c2c7886189c32e2a5f88a9c2bde1b1f26562f1a107f0eaaba7b80e8d1f98d2",
+    "6fe5e609eaaea8dcc6853099356f3e89a41d509af1d5e65fd0da63c762dc12ef",
+    "7306522522c530af0d72a91af21ba553ced09d17e0084e7c5226a08eef054993",
+    "9d4d9c2cbedfd229eca93e2b8e2095955ec521bd8ab1bbb7e5362a18291a3f90",
+    "9d4e329cd4fa38b105bd3979e9fcf64173d6331b0fc93c2c5b9ae0a685db255d",
+    "a0f10f44abd84d1af547fc159c3a13038e661675b8ce868800cf813682270016",
+    "b985bea84cdce9d21538440a8b08e1f77775f1d089f5cf3b8c6ca4da9fc1fe24",
+    "c3a35b3f00d219225f0f31fa32eece6945b96a6becb901bb78220e11cad88113",
+    "c3c28ad95b79758e715b7b1818f6d54226f72f1c84c0845f50fc0497566cdff7",
+    "d7b4fe053740d780b2530fe15434f4c0f20d0a7fc94c65b130a3eefbf3114b20",
+    "df72f3651f29bca099e9db2bbc955e045a4a0fa6b9eb0ae1c6b5c2b3938454fc",
+    "e778277e782f7289a16038f6014126c7a51dc58ba58cdcc1d7963f0e1cc0b099",
+    "f51de01ec38231e0b15b18f9f689ce9764911a30df8f0f206dbdbb7e0f0b814c",
+    "f522475ec949e61ea9475d2329dae2f8ab19967e6df3a07cc77a86fd1cdbb902"
+  ],
+  "residual_scale": 0.95,
+  "key_bits": [
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0
+  ],
+  "evidence_kind": "decoder-evidence",
+  "embedder": {
+    "file": "MaskNet_embedding.pt",
+    "sha256": "d82d014fd463303fc04250157dab1d119e117be75caae3003ce3deba807d5733"
+  },
+  "evidence": {
+    "file": "MaskNet_evidence.pt",
+    "sha256": "bf524a79372a3c581d076b4a1ddd7ef16860dcaea868c00459c710231a7d7df6"
+  },
+  "readout": {
+    "file": "MaskNet_readout.pt",
+    "sha256": "03bbc13401e1861c7f8302ac12270ce5c62debe3050a4df19e5086c53cd634a3",
+    "family": "encoder",
+    "kind": "temporal_mask"
+  },
+  "auxiliary_native_mean": true,
+  "default_operating_point": "worstcase_0.01",
+  "operating_points": {
+    "pooled_0.01": {
+      "thresholds": [
+        0.2785278260707856,
+        0.7102323770523072
+      ]
+    },
+    "worstcase_0.01": {
+      "thresholds": [
+        4.1460304260253915,
+        0.5103373527526857
+      ]
+    },
+    "pooled_0.05": {
+      "thresholds": [
+        -4.338304996490478,
+        0.7102323770523072
+      ]
+    },
+    "worstcase_0.05": {
+      "thresholds": [
+        -1.1216303110122678,
+        0.5103373527526857
+      ]
+    }
+  },
+  "query_score_scales": [
+    4.141068458557129,
+    0.05530522728804499
+  ],
+  "model_name": "MaskNet",
+  "architectures": [
+    "MaskNet"
+  ]
+}

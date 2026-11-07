@@ -1,0 +1,18 @@
+{
+  "ST": {
+    "config": "/path/to/config.json",
+    "config_SHA256": "CONFIG_SHA256",
+    "checkpoint": "/path/to/checkpoint.pt",
+    "checkpoint_SHA256": "FILE_SHA256",
+    "state_SHA256": "TENSOR_STATE_SHA256"
+  },
+  "EN": {
+    "directory": "/path/to/encodec_24khz",
+    "state_SHA256": "TENSOR_STATE_SHA256"
+  },
+  "DA": {
+    "checkpoint": "/path/to/dac44.pth",
+    "checkpoint_SHA256": "FILE_SHA256",
+    "state_SHA256": "TENSOR_STATE_SHA256"
+  }
+}

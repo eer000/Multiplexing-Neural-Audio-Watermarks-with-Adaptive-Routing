@@ -1,98 +1,62 @@
 # Multiplexing Neural Audio Watermarks with Adaptive Routing
 
-AudioSeal adaptation for SpeechTokenizer, with feature-constrained generator–detector fine-tuning and AudioSeal–PerTh routing through MaskNet.
+MaskNet embeds a watermark in speech and detects its presence with a fixed key. The model combines an audio embedder, a shared evidence encoder, a temporal masking readout and a native keyed readout. Detection uses a calibrated Any rule over the two readouts.
 
-**Current release: [Feature-constrained AudioSeal, step 600](https://github.com/eer000/Multiplexing-Neural-Audio-Watermarks-with-Adaptive-Routing/releases/tag/v0.2.0-latent600).** The release includes the adapted generator and detector, the initialization and proxy used for fine-tuning, and the historical MaskNet routing checkpoint.
+## Installation
 
-## Install and download
-
-Use Python 3.10+ with PyTorch and TorchAudio built for the same platform. Training requires CUDA. MP3 evaluation requires FFmpeg with libmp3lame.
+Python 3.10+, PyTorch 2.10.0 and a CUDA GPU are required.
 
 ```bash
-pip install -e '.[multiplex]'
-python -m audioseal_st.download --output weights --training --masknet
+git clone https://github.com/eer000/Multiplexing-Neural-Audio-Watermarks-with-Adaptive-Routing.git MaskNet
+cd MaskNet
+pip install -e .
 ```
 
-Downloads are versioned and verified against the SHA-256 hashes in [weights.json](weights.json). AudioSeal's upstream base generator is loaded by its official package. For training or ST evaluation, obtain `config.json` and `SpeechTokenizer.pt` from the [official 16 kHz HuBERT-average SpeechTokenizer model](https://huggingface.co/fnlp/SpeechTokenizer/tree/main/speechtokenizer_hubert_avg), and place them in `tokenizer/`.
+Download the files from [MaskNet on Hugging Face](https://huggingface.co/eeryyq/MaskNet/tree/main) into a local `weights` directory: `MaskNet_embedding.pt`, `MaskNet_evidence.pt`, `MaskNet_readout.pt` and `model.json`.
 
-## Embed a watermark
+## Inference
+
+Inputs are 16 kHz mono audio. Output length matches the input, including for files longer than six seconds.
+
+```python
+import soundfile as sf
+import torch
+from masknet_watermark import MaskNet
+
+model = MaskNet("weights")
+audio, sr = sf.read("speech.wav", dtype="float32")
+wave = torch.from_numpy(audio).reshape(1, 1, -1)
+marked = model.embed_audio(wave, sr)
+sf.write("marked.wav", marked.numpy().reshape(-1), sr, subtype="FLOAT")
+
+result = model.score_audio(marked, sr)
+for segment in result["segments"]:
+    print(segment["start_seconds"], segment["end_seconds"], segment["detected"])
+```
+
+The same workflow is available from the command line:
 
 ```bash
-python -m audioseal_st.infer --input speech.wav --output watermarked.wav --weights weights
+python -m masknet_watermark.audio embed --model weights --input speech.wav --output marked.wav
+python -m masknet_watermark.audio detect --model weights --input marked.wav --output detections.json
 ```
 
-The output is mono 16 kHz PCM. The default message is `0101010101010101`; `--message` accepts any 16 binary digits. This release is evaluated for watermark presence; presence detection and payload recovery are separate metrics.
+Embedding uses six-second windows with one-second overlap and smooths the watermark residual at window boundaries. Detection returns timestamped per-window scores and decisions; tail padding is recorded in the result. The released false-positive operating points apply to each analysis window. Whole-file aggregation requires its own calibration.
 
-Inference applies the same constraints as training: a smooth 40 ms input-energy-dependent residual limit with parameter 30 dB, a global 26 dB cap, and attenuation to at most the original AudioSeal residual power for the same audio and message. The local limiter is a pointwise envelope constraint, rather than a guaranteed window-wise SNR bound.
+The low-level `embed` and `score` methods support six-second embedding and 0.6-, 1.5- or six-second detection. `embed_audio` and `score_audio` handle file duration automatically. Weights are verified by checksum when loaded.
 
-## Fine-tune
+## Evaluation
 
-Create `train_manifest.json` with four non-overlapping path lists named `train`, `val`, `cal`, and `test`, relative to `audio/`. Use speaker-disjoint groups. Inputs must be mono-compatible 16 kHz audio of at least four seconds; the first four seconds are used.
+The evaluation code evaluates MaskNet on paired clean and marked speech. Install the quality metrics with `pip install -e ".[evaluation]"`; codec channels additionally use `.[codec-evaluation]`, `ffmpeg` and the assets described in `codec_assets.example.json`.
 
 ```bash
-python -m audioseal_st.train \
-  --manifest train_manifest.json --data-root audio \
-  --init-generator weights/initial_generator.pt \
-  --proxy-checkpoint weights/proxy.pt \
-  --sptk-config tokenizer/config.json \
-  --sptk-checkpoint tokenizer/SpeechTokenizer.pt \
-  --steps 600 --save-every 100 --output runs/feature_constraint
+python -m masknet_watermark.generate --model weights --sources sources.json --output paired
+python -m masknet_watermark.perturb --model weights --manifest paired/manifest.json --codec-assets codecs.json --output attacked
+python -m masknet_watermark.evaluate --model weights --manifest attacked/manifest.json --output results.json --quality
 ```
 
-The recipe starts from the supplied adapted AudioSeal generator and the official pretrained AudioSeal detector. It updates the generator decoder/message processor and the detector, while freezing SpeechTokenizer and the proxy. Real ST supplies forward outputs; the proxy supplies backward gradients. A cosine constraint encourages the input-induced change in continuous ST encoder features to remain aligned after ST reconstruction. The loss also anchors generated audio to the initial low-noise output and penalizes spectral masking violations. Detector training includes identically processed clean negatives and energy-matched ordinary-noise negatives. One quarter of steps also use the unattacked positive and clean negative branch.
+Use six-second sources for this benchmark. `sources.json` has `model_id: "MaskNet"`, `role: "evaluation"` and a `sources` list containing `sample_id`, `speaker_id` and `path`. Evaluation speakers are separate from calibration speakers. Results include detection counts, actual false positives, sample sizes, confidence intervals, ROC and quality measurements, with missing values recorded explicitly.
 
-The detector learning rate is 1e-5, generator learning rate 2e-6, and batch size 2. Each stage saves both models, optimizer state, and random state. The released models are the step-600 pair from an 800-step experiment. The supplied initialization supports this adaptation stage directly. Training history and the published stage are distinct from validation-based checkpoint selection performed by a new run.
+## License
 
-## Evaluate single attacks
-
-Create `eval_manifest.json` with a `files` array. Each entry contains `path` (relative to `audio/`), `split` (`cal` or `eval`), and `message` (16 binary integers). Use separate calibration and evaluation speakers and fixed messages. Calibration entries supply clean negatives; evaluation entries supply paired clean and watermarked audio.
-
-```bash
-python -m audioseal_st.evaluate \
-  --manifest eval_manifest.json --data-root audio \
-  --audioseal-checkpoint weights/generator.pt \
-  --detector-checkpoint weights/detector.pt \
-  --sptk-config tokenizer/config.json \
-  --sptk-checkpoint tokenizer/SpeechTokenizer.pt \
-  --single-only --seconds 4 \
-  --attacks NA,ST,lowpass,gaussian,mp3 --output runs/single
-```
-
-Attacks are independent: no attack, all-layer ST reconstruction, 3.4 kHz biquad low-pass, 20 dB Gaussian noise, and 32 kbps MP3. Gaussian noise uses the same per-clip seed across compared waveforms and is scaled relative to each input.
-
-For historical MaskNet + PerTh routing, omit `--single-only` and add:
-
-```bash
---mask-checkpoint weights/masknet.pt --mask-config configs/masknet.json
-```
-
-The router has three convolutional layers, 32 hidden channels, kernel size 15, and sigmoid output. It mixes the constrained AudioSeal and PerTh residuals before clipping. This historical router is distributed for direct evaluation, and is not retrained by the AudioSeal adaptation command.
-
-Reports contain raw per-clip scores, artifact hashes, SNR/PESQ/STOI, original and adapted AudioSeal detector scores, and PerTh scores. Primary detection results use independent calibration. Joint Any uses a fixed 0.5% calibration budget per detector; its test false-positive rate is measured. Empirical test-set ROC statistics are supplied separately.
-
-## Released-checkpoint measurements
-
-1,000 calibration clips and 500 evaluation clips from LibriSpeech test-clean, with disjoint speakers and excluding the preceding 128-clip experiment. Quality compares watermarked audio with its original waveform before attack. All rows use independently calibrated, attack-specific thresholds.
-
-| Single attack | Adapted AudioSeal TPR / FPR | Historical MaskNet + PerTh Any TPR / FPR |
-|---|---:|---:|
-| None | 96.0% / 2.0% | 100% / 6.4% |
-| SpeechTokenizer | 70.4% / 1.8% | 59.8% / 6.4% |
-| Low-pass | 83.8% / 1.2% | 100% / 5.8% |
-| Gaussian noise | 99.6% / 1.4% | 100% / 4.6% |
-| MP3 | 54.4% / 3.4% | 100% / 7.6% |
-
-| Embedding | SNR | PESQ | STOI |
-|---|---:|---:|---:|
-| Adapted AudioSeal | 29.12 dB | 4.014 | 0.9952 |
-| Historical MaskNet + PerTh | 15.33 dB | 3.923 | 0.9888 |
-
-These are measurements of this released adaptation, distinct from the paper's benchmark. The observed ST false-positive rate is 1.8%, above the 1% calibration target. [Machine-readable results](results/latent600.json) retain the measured rates and thresholds. Joint Any means at least one detector accepts, rather than simultaneous survival of both payloads.
-
-## Checks and attribution
-
-```bash
-PYTHONPATH=src python -m unittest discover -s tests -v
-```
-
-AudioSeal and its pretrained weights are MIT licensed. See [third-party notices](THIRD_PARTY_NOTICES.md). Other dependencies retain their respective terms. No additional license grant is made for this repository's original code and artifacts.
+Apache License 2.0. Component attribution is provided in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
